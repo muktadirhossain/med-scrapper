@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio';
 import fs from 'fs';
 import connectDB from "./config/connectDB.js";
 import Medicine from './model/medicine.model.js';
+import medicineData from './medicines-name.json' with { type: "json" } ;
 
 connectDB()
 
@@ -22,50 +23,54 @@ export async function scrapeWebsite(url) {
     const $ = cheerio.load(content);
 
     // Extract the total pages count
-    let totalPages = 1; // Default to 1 if no pagination found
-    $('.pagination .page-item a').each((index, element) => {
-        const pageNumber = parseInt($(element).text(), 10);
-        if (!isNaN(pageNumber) && pageNumber > totalPages) {
-            totalPages = pageNumber;
-        }
-    });
+    // let totalPages = 1; // Default to 1 if no pagination found
+    // $('.pagination .page-item a').each((index, element) => {
+    //     const pageNumber = parseInt($(element).text(), 10);
+    //     if (!isNaN(pageNumber) && pageNumber > totalPages) {
+    //         totalPages = pageNumber;
+    //     }
+    // });
 
-    console.log('Total pages: ' + totalPages)
+    // console.log('Total pages: ' + totalPages)
 
 
-    const data = [];
+    // const data = [];
 
     // Loop through each page
-    for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    // for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
 
-        console.log("Scrapping page ...." + pageNum)
-        const pageUrl = `${url}?page=${pageNum}`;
-        await page.goto(pageUrl);
-        const pageContent = await page.content();
-        const $ = cheerio.load(pageContent);
+    //     console.log("Scrapping page ...." + pageNum)
+    //     const pageUrl = `${url}?page=${pageNum}`;
+    //     await page.goto(pageUrl);
+    //     const pageContent = await page.content();
+    //     const $ = cheerio.load(pageContent);
 
-        // Extract the information
-        $('.hoverable-block').each((index, element) => {
-            const details_link = $(element).attr('href');
-            const title = $(element).find('.col-xs-12.data-row-top').text().trim();
-            const strength = $(element).find('.col-xs-12.data-row-strength').text().trim();
-            const generic_name = $(element).find('.col-xs-12').eq(2).text().trim();
-            const company = $(element).find('.data-row-company').text().trim();
+    //     // Extract the information
+    //     $('.hoverable-block').each((index, element) => {
+    //         const details_link = $(element).attr('href');
+    //         const title = $(element).find('.col-xs-12.data-row-top').text().trim();
+    //         const strength = $(element).find('.col-xs-12.data-row-strength').text().trim();
+    //         const generic_name = $(element).find('.col-xs-12').eq(2).text().trim();
+    //         const company = $(element).find('.data-row-company').text().trim();
 
-            data.push({
-                details_link,
-                brand_name: title,
-                strength,
-                generic_name,
-                supplier: company,
-                details: {} // Placeholder for additional details
-            });
-        });
-    }
+    //         data.push({
+    //             details_link,
+    //             brand_name: title,
+    //             strength,
+    //             generic_name,
+    //             supplier: company,
+    //             details: {} // Placeholder for additional details
+    //         });
+    //     });
+    // }
+
+    // fs.writeFileSync('medicines-name.json', JSON.stringify(data, null, 2), 'utf-8');
+
+    const data = [...medicineData]
 
     // GET Details Info
     for (let i = 0; i < data.length; i++) {
-        
+
         console.log(`getting details of ${data.length}/ ${i}`)
         const detailsPageUrl = data[i].details_link;
         const detailsPageData = await scrapeDetailsPage(detailsPageUrl, browser);
