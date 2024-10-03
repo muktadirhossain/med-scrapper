@@ -3,7 +3,9 @@ import * as cheerio from 'cheerio';
 import fs from 'fs';
 import connectDB from "./config/connectDB.js";
 import Medicine from './model/medicine.model.js';
-import medicineData from './medicines-name.json' with { type: "json" } ;
+// import medicineData from './medicines-name.json' assert { type: "json" };
+
+import medicineData from './remaining14352Data.json' assert { type: "json" };
 
 connectDB()
 
@@ -14,7 +16,7 @@ export async function scrapeWebsite(url) {
     const page = await browser.newPage();
 
     // Navigate to the URL
-    await page.goto(url);
+    await page.goto(url,{ waitUntil: 'load', timeout: 0 });
 
     // Get the HTML content of the page
     const content = await page.content();
