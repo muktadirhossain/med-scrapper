@@ -7,9 +7,15 @@ import Medicine from './model/drug.model.js';
 // Connect to the database
 connectDB();
 
+// Helper function to add a random delay
+const delay = (min, max) => new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * (max - min + 1)) + min));
+
 export async function scrapeWebsite(url) {
     // Launch Puppeteer browser
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        headless: true
+    });
     const page = await browser.newPage();
 
     // Go to the initial URL with a disabled timeout and wait for the network to be idle
@@ -83,7 +89,13 @@ export async function scrapeWebsite(url) {
             } catch (err) {
                 console.error(`❌ Error inserting ${medicineData.brand_name}:`, err);
             }
+
+            // Add random delay between scraping each medicine detail
+            await delay(2000, 5000); // Random delay between 2 to 5 seconds
         }
+
+        // Add random delay between scraping each page
+        await delay(3000, 7000); // Random delay between 3 to 7 seconds
     }
 
     // Close the browser after scraping
@@ -132,4 +144,4 @@ async function scrapeDetailsPage(url, browser) {
 }
 
 // Start scraping with the first page
-scrapeWebsite('https://medex.com.bd/brands?page=1');
+scrapeWebsite('https://medex.com.bd/brands');

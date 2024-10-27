@@ -1,22 +1,9 @@
 import mongoose from 'mongoose';
 
-const AlsoAvailableAsSchema = new mongoose.Schema({
-    href: {
-        type: String,
-    },
-    title: {
-        type: String,
-    },
-    text: {
-        type: String,
-    }
-}, { _id: false });
-
 
 const MedicineSchema = new mongoose.Schema({
     details_link: {
         type: String,
-        unique: true,
     },
     brand_name: {
         type: String,
@@ -39,10 +26,12 @@ const MedicineSchema = new mongoose.Schema({
     stripPrice: {
         type: String
     },
-    alsoAvailableAs: [AlsoAvailableAsSchema]
+    imageUrl: {
+        type: String, // Added to store the image URL
+    }
 });
 
 // Create the model
-const Drug = mongoose.model('Drug', MedicineSchema);
+const Panacea = mongoose.model('Panacea', MedicineSchema);
 
-export default Drug;
+export default Panacea;
